@@ -1,0 +1,173 @@
+public class winwinLoginForm {
+
+    public static final WebDriver driver = new ChromeDriver();
+    WebDriverWait wait = new WebDriverWait(driver, 10);
+
+    //URL env
+    String envURL = "https://www.winwin.rs/customer/account/login/";
+
+    //Locators
+    String buttonLogin = "send2";
+    String emailfield = "email";
+    String passwordfield = "pass";
+    String validationMessage = "li.error-msg";
+    String validationMessageEmail = "advice-required-entry-email";
+    String validationMessagePassword = "advice-required-entry-pass";
+    String validationMessageWrongEmailFormat = "advice-validate-email-email";
+    String validationMessagePassLessOf6Ch = "advice-validate-password-pass";
+
+
+    //Test data
+    String expectedValMsg = "Ovo je obavezno polje.";
+    String expectedValMsg2 = "Email adresa ili lozinka nisu validni.";
+    String expectedValMsgWrongEmailFormat = "Molimo unesite ispravnu email adresu. Npr. milanpetrovic@domen.com.";
+    String expectedValMsgPassLessOf6Ch = "Please enter 6 or more characters without leading or trailing spaces.";
+
+    @Before
+    public void openApplication() {
+        driver.get(envURL);
+        driver.manage().window().maximize();
+    }
+
+    //01.TC- The one where user submits all required fields empty
+    @Test
+    public void Test01() throws Exception {
+
+        wait.until(ExpectedConditions.elementToBeClickable(By.id(buttonLogin)));
+        driver.findElement(By.id(buttonLogin)).click();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id(validationMessageEmail)));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id(validationMessagePassword)));
+        if (driver.findElement(By.id(validationMessageEmail)) !=null) {
+
+            String actualValMsg = driver.findElement(By.id(validationMessageEmail)).getText();
+            String actualValMsg2 = driver.findElement(By.id(validationMessagePassword)).getText();
+            Assert.assertEquals(expectedValMsg, actualValMsg);
+            Assert.assertEquals(expectedValMsg, actualValMsg2);
+
+        }else {
+
+            throw new Exception("ERROR The User login on his account");
+        }
+
+    }
+
+    //02.TC- The one where user submits valid data for Email address and leave empty Password
+    @Test
+    public void Test02() throws Exception{
+
+        wait.until(ExpectedConditions.elementToBeClickable(By.id(buttonLogin)));
+        driver.findElement(By.id(emailfield)).sendKeys("pedja1984@gmail.com");
+        driver.findElement(By.id(buttonLogin)).click();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id(validationMessagePassword)));
+        if (driver.findElement(By.id(validationMessagePassword)) !=null) {
+
+            String actualValMsg = driver.findElement(By.id(validationMessagePassword)).getText();
+            Assert.assertEquals(expectedValMsg, actualValMsg);
+
+        }else {
+
+            throw new Exception("ERROR The User login on his account");
+        }
+    }
+
+    //03.TC- The one where user submits empty Email addres and valid data for Password
+    @Test
+    public void Test03() throws Exception{
+
+        wait.until(ExpectedConditions.elementToBeClickable(By.id(buttonLogin)));
+        driver.findElement(By.id(passwordfield)).sendKeys("test123");
+        driver.findElement(By.id(buttonLogin)).click();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id(validationMessageEmail)));
+        if (driver.findElement(By.id(validationMessageEmail)) !=null) {
+
+            String actualValMsg = driver.findElement(By.id(validationMessageEmail)).getText();
+            Assert.assertEquals(expectedValMsg, actualValMsg);
+
+        }else {
+
+            throw new Exception("ERROR The user login on his account");
+        }
+    }
+
+    //04.TC- The one where user submits valid data for Email address and wrong data for Password
+    @Test
+    public void Test04() throws Exception{
+
+        wait.until(ExpectedConditions.elementToBeClickable(By.id(buttonLogin)));
+        driver.findElement(By.id(emailfield)).sendKeys("pedja1984@gmail.com");
+        driver.findElement(By.id(passwordfield)).sendKeys("testtest");
+        driver.findElement(By.id(buttonLogin)).click();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(validationMessage)));
+        if (driver.findElement(By.cssSelector(validationMessage)) !=null) {
+
+            String actualValMsg = driver.findElement(By.cssSelector(validationMessage)).getText();
+            Assert.assertEquals(expectedValMsg2, actualValMsg);
+
+        }else {
+
+            throw new Exception("ERROR The user login on his account");
+        }
+    }
+
+    //05.TC- The one where user submits wrong data for Email address and valid data for Password
+    @Test
+    public void Test05() throws Exception{
+
+        wait.until(ExpectedConditions.elementToBeClickable(By.id(buttonLogin)));
+        driver.findElement(By.id(emailfield)).sendKeys("pedja19@gmail.com");
+        driver.findElement(By.id(passwordfield)).sendKeys("test123");
+        driver.findElement(By.id(buttonLogin)).click();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(validationMessage)));
+        if (driver.findElement(By.cssSelector(validationMessage)) !=null) {
+
+            String actualValMsg = driver.findElement(By.cssSelector(validationMessage)).getText();
+            Assert.assertEquals(expectedValMsg2, actualValMsg);
+
+        }else {
+
+            throw new Exception("ERROR The user login on his account");
+        }
+    }
+
+    //06.TC- The one where user submits wrong format for Email address
+    @Test
+    public void Test06() throws Exception{
+
+        wait.until(ExpectedConditions.elementToBeClickable(By.id(buttonLogin)));
+        driver.findElement(By.id(emailfield)).sendKeys("pedjaemail.com");
+        driver.findElement(By.id(buttonLogin)).click();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id(validationMessageWrongEmailFormat)));
+        if (driver.findElement(By.id(validationMessageWrongEmailFormat)) !=null) {
+
+            String actualValMsg = driver.findElement(By.id(validationMessageWrongEmailFormat)).getText();
+            Assert.assertEquals(expectedValMsgWrongEmailFormat, actualValMsg);
+
+        }else {
+
+            throw new Exception("ERROR The User login on his account");
+        }
+    }
+
+    //07.TC- The one where user submits password with less of six characters
+    @Test
+    public void Test07() throws Exception{
+
+        wait.until(ExpectedConditions.elementToBeClickable(By.id(buttonLogin)));
+        driver.findElement(By.id(passwordfield)).sendKeys("test");
+        driver.findElement(By.id(buttonLogin)).click();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id(validationMessagePassLessOf6Ch)));
+        if (driver.findElement(By.id(validationMessagePassLessOf6Ch)) !=null) {
+
+            String actualValMsg = driver.findElement(By.id(validationMessagePassLessOf6Ch)).getText();
+            Assert.assertEquals(expectedValMsgPassLessOf6Ch, actualValMsg);
+
+        }else {
+
+            throw new Exception("ERROR The User login on his account");
+        }
+        driver.close();
+
+    }
+
+
+}
